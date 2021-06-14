@@ -1,0 +1,133 @@
+{% extends 'BaseUI/BaseFacility/baseManufacture.html' %}
+
+<!----------- BLOCK MENU ------------->
+{% block listeq %}{% url 'equipmentDisplay' facilityID %}{% endblock %}
+{% block design %}{% url 'designcodeDisplay' facilityID %}{% endblock %}
+{% block manu %}{% url 'manufactureDisplay' facilityID %}{% endblock %}
+
+{% block listmanu %}{% url 'manufactureDisplay' siteID %}{% endblock %}
+{% block newmanu %}{% url 'manufactureNew' siteID %}{% endblock %}
+{% block backfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block listfaci %}{% url 'facilitiesDisplay' siteID %}{% endblock %}
+{% block newfaci %}{% url 'facilitiesNew' siteID %}{% endblock %}
+{% block uploadInsp %}{% url 'upload' siteID %}{% endblock %}
+{% block uploadPlant %}{% url 'uploadPlan' siteID %}{% endblock %}
+{% block inspecPlan %}{% url 'inspectionPlan' siteID %}{% endblock %}
+<!----------- END BLOCK ------------->
+
+{% block data-content %}
+    <form method="post">
+    {% csrf_token %}
+        <div class="table-title">
+          <h2><b>List of Manufactures</b></h2>
+        </div>
+        <div style="text-align: center" class="table-custom">
+            <table class="table" id="mytable">
+                <thead>
+                    <tr>
+                        <th width="10px" style="text-align: center"></th>
+                        <th width="1000px" style="text-align: center;">Manufacture</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for a in obj %}
+                    <tr>
+                        <td style="text-align: center"><input type="checkbox" name="{{ a.manufacturerid }}" id="checkbox" class="checkboxClass"></td>
+                        <td style="text-align: center;">{{ a.manufacturername }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+         {#          Pagination div  #}
+            <div>
+                {% if obj.has_other_pages %}
+              <ul class="pagination">
+                {% if obj.has_previous %}
+                  <li><a href="?page={{ obj.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in obj.paginator.page_range %}
+                  {% if obj.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                  {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if obj.has_next %}
+                  <li><a href="?page={{ obj.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+              </ul>
+            {% endif %}
+            </div>
+
+
+{#            tool div #}
+            <br>
+            <div>
+                <button type="submit" name="_edit" id="edit" class="btn btn-primary"><i class="fa fa-pencil">&emsp;Edit Selected</i></button>
+                <!--<button type="submit" class="btn btn-warning" id="sub" onclick="Sub()"><i class="fa fa-trash-o">&emsp;Delete Selected</i></button>-->
+                <button type="submit" name="_new" class="btn btn-primary"><i class="fa fa-pencil">&emsp;New Manufacture</i></button>
+            </div>
+            <script>
+                    $( document ).ready(function() {
+                      setTimeout(() => {
+                        var isDisabledBtn = 0;
+                        $(".checkboxClass").each(function(){
+                        console.log(this.checked);
+                          if(this.checked) {
+                            isDisabledBtn = 1;
+                          }
+                        })
+                        if(isDisabledBtn == 1){
+                            $("#edit").attr("disabled", false);
+                            $("#sub").attr("disabled", false);
+                        } else {
+                            $("#edit").attr("disabled", true);
+                            $("#sub").attr("disabled", true);
+                        }
+                        // $("#checkboxAllNormal").prop("checked", false);
+                      }, 10);
+                    });
+                    $("input[id='checkbox']").change(function (e) {
+                        var isChecked = $(this).prop("checked");
+                        if (isChecked == false) {
+                            $("#edit").attr("disabled", true);
+                            $("#sub").attr("disabled", true);
+                        }
+                        else {
+                            $("#edit").attr("disabled", false);
+                            $("#sub").attr("disabled", false);
+                        }
+                    });
+                    $(document).ready(function() {
+                      $("input[type=checkbox]").prop("checked", false);
+                      $("input[type=checkbox]:first").prop("checked", true);
+
+                      $("input[type=checkbox]").click(function(event) {
+                        $("input[type=checkbox]").prop("checked", false);
+                        $(this).prop("checked", true);
+
+                        //event.preventDefault();
+                      });
+                    });
+                    window.onload = function() {
+                      document.querySelectorAll("INPUT[type='checkbox']").forEach(function(rd) {
+                        rd.addEventListener("mousedown", function() {
+                          if(this.checked) {
+                            this.onclick=function() {
+                              this.checked=false
+                            }
+                          } else {
+                            this.onclick=null
+                          }
+                        })
+                      })
+                    }
+            </script>
+        </div>
+    </form>
+{% endblock %}
